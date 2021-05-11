@@ -112,25 +112,19 @@ def generate_images(
         if class_idx is not None:
             print ('warn: --class=lbl ignored when running on an unconditional network')
 
-    zs_cuda = list()
-    zs_cpu = list()
+    zs = list()
 
     # Generate images.
     for seed_idx, seed in enumerate(seeds):
         print('Generating image for seed %d (%d/%d) ...' % (seed, seed_idx, len(seeds)))
         z = torch.from_numpy(np.random.RandomState(seed).randn(1, G.z_dim)).to(device)
-        z_cpu = torch.from_numpy(np.random.RandomState(seed).randn(1, G.z_dim)).to('cpu')
-        zs_cuda.append(z)
-        zs_cpu.append(z_cpu)
+        zs.append(z)
         img = G(z, label, truncation_psi=truncation_psi, noise_mode=noise_mode)
         img = (img.permute(0, 2, 3, 1) * 127.5 + 128).clamp(0, 255).to(torch.uint8)
         PIL.Image.fromarray(img[0].cpu().numpy(), 'RGB').save(f'{outdir}/seed{seed:04d}.png')
 
     with open(f"{outdir}/latent_cuda.npy", 'wb') as f:
-        np.save(f, np.array(zs_cuda))
-
-    with open(f"{outdir}/latent_cpu.npy", 'wb') as f:
-        np.save(f, np.array(zs_cpu))
+        np.save(f, np.array(zs))
 
 #----------------------------------------------------------------------------
 
