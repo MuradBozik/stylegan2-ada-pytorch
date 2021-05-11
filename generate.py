@@ -119,8 +119,9 @@ def generate_images(
     for seed_idx, seed in enumerate(seeds):
         print('Generating image for seed %d (%d/%d) ...' % (seed, seed_idx, len(seeds)))
         z = torch.from_numpy(np.random.RandomState(seed).randn(1, G.z_dim)).to(device)
-        zs_cuda.append(z.to('cuda'))
-        zs_cpu.append(z.to('cpu'))
+        z_cpu = torch.from_numpy(np.random.RandomState(seed).randn(1, G.z_dim)).to('cpu')
+        zs_cuda.append(z)
+        zs_cpu.append(z_cpu)
         img = G(z, label, truncation_psi=truncation_psi, noise_mode=noise_mode)
         img = (img.permute(0, 2, 3, 1) * 127.5 + 128).clamp(0, 255).to(torch.uint8)
         PIL.Image.fromarray(img[0].cpu().numpy(), 'RGB').save(f'{outdir}/seed{seed:04d}.png')
@@ -129,7 +130,7 @@ def generate_images(
         np.save(f, np.array(zs_cuda))
 
     with open(f"{outdir}/latent_cpu.npy", 'wb') as f:
-        np.save(f, zs_cpu)
+        np.save(f, np.array(zs_cpu))
 
 #----------------------------------------------------------------------------
 
