@@ -129,7 +129,7 @@ def generate_images(
         np.save(f, np.array(zs_cuda))
 
     with open(f"{outdir}/latent_cpu.npy", 'wb') as f:
-        np.save(f, np.array(zs_cpu))
+        np.save(f, zs_cpu)
 
 #----------------------------------------------------------------------------
 
