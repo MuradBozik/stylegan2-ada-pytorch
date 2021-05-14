@@ -9,6 +9,7 @@
 """Generate images using pretrained network pickle."""
 
 import os
+os.environ['CUDA_VISIBLE_DEVICES'] = "3"
 import re
 from typing import List, Optional
 
